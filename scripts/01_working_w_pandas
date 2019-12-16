@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Dec  6 10:55:49 2019
+
+@author: akemberling
+"""
+
+#Pandas Library
+import pandas as pd
+
+#Reading CSV files using pandas
+
+# Note that pd.read_csv is used because we imported pandas as pd
+pd.read_csv("data/raw/surveys.csv")
+
+#Load it into the environment
+surveys_df = pd.read_csv("data/raw/surveys.csv")
+
+
+#inspect it
+surveys_df.head()
+type(surveys_df.head())
+surveys_df.dtypes
+
+# Look at the column names
+surveys_df.columns
+
+#Let’s get a list of all the species. The pd.unique function tells us all of the unique values in the species_id column.
+pd.unique(surveys_df['species_id'])
+
+# Create a list of unique site ID’s (“plot_id”) found in the surveys data. Call it site_names. 
+site_names = pd.unique(surveys_df['plot_id'])
+
+# How many unique sites are there in the data? How many unique species are in the data? 
+site_names.shape
+
+####  Groups in Pandas  ####
+
+#We can calculate basis statistics for all records in a single column using the syntax below
+surveys_df['weight'].describe()
+
+#We can also extract one specific metric if we wish:
+surveys_df['weight'].max()
+surveys_df.max()
+
+
+#we can use Pandas’ .groupby method. Once we’ve created a groupby DataFrame, 
+#we can quickly calculate summary statistics by a group of our choice.
+
+# Group data by sex
+grouped_data = surveys_df.groupby('sex')
+
+# Summary statistics for all numeric columns by sex
+grouped_data.describe()
+# Provide the mean for each numeric column by sex
+grouped_data.mean()
+
+
+
+####  Quickly Creating Summary Counts in Pandas  ####
+# Count the number of samples bu species
+species_counts = surveys_df.groupby('species_id')['record_id'].count()
+
+#or we can also count just the rows with the species "DO"
+surveys_df.groupby('species_id')['record_id'].count()['DO']
+
+
+####  Basic math funcitons  ####
+
+#Multiply all weight values by 2
+surveys_df['weight'] * 2
+
+# Quick and Easy Plotting
+
+#Create a quick bar chart
+species_counts.plot(kind = "bar")
+
+#We can also look at how many animals were captured in each site
+total_count = surveys_df.groupby('plot_id')['record_id'].nunique()
+
+# Let's plot that too
+total_count.plot(kind='bar');
+
+#Summary plot challenge
+#Create a plot of average weight across all species per site
+surveys_df
+ss_groups = surveys_df.groupby(['species_id', 'record_id'])
+ss_groups.mean()['weight']
+
+
+#Plot of tatal males vs. total females
+surveys_df.groupby('sex').count()
+
+
+
+
